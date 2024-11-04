@@ -1,0 +1,1 @@
+set('123456789').issubset(set(input()))

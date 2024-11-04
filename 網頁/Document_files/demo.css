@@ -1,0 +1,22 @@
+table  td{
+    border: #f30041 3px solid; 
+    border-collapse: collapse;
+    border-top-right-radius: 15px;
+    border: 1px #0c00f1 solid;
+    font-size: 26px;
+    width: 25%;
+    color: #010101;
+    /* background-color: brown; */
+    /*background-image:linear-gradient(#1a5155, #54c1c9, #1a5155)*/
+}
+.styl1{
+    /* border: #f30041 3px solid; 
+    border-collapse: collapse; */
+    border-top-right-radius: 15px;
+    border: 1px #00ff00 solid;
+    font-size: 26px;
+    width: 25%;
+    color: #ffffff;
+    /* background-color: brown; */
+    background-image:linear-gradient(#1a5155, #54c1c9, #1a5155)
+}

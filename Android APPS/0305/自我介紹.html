@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+
+
+<!-- <link href="Htmlcss.css" rel="stylesheet" type="text/css"/>
+ -->
+<html lang="en">
+
+<head>
+
+    <!--載入JQuery3.5.1 函示庫-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- 輸出HTML共用函式庫 -->
+    <script src="./js/HTMLCommFunc.js"></script>
+
+    <!-- 載入網頁CSS樣式 -->
+    <link href="./css/Resume.css" rel="stylesheet" type="text/css" />
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--描述HTML 文件編碼為utf-8 -->
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+
+    <!--顯示瀏覽器標題文字-->
+    <title>個人簡例練習</title>
+
+    <style>
+
+    </style>
+
+</head>
+
+<body>
+    <div id="sitebody">
+
+        　<div id="header">
+            <H1>個人簡歷練習</H1>
+        </div>
+
+        <Section>
+            　<div id="menuflex">
+                <img id='PersonImg' class='PersonImgflex' src='./image/賭神背影.jpg' />
+                <H2>
+                    <!-- 簡歷人員列表區塊  -->
+                    <div id="PersonList">
+                        <ol>
+
+
+                            <a href="#">
+                                <li id="Question" onclick="getQuestion();">分組活動問題</li>
+                            </a>
+
+                        </ol>
+                    </div>
+                    <!-- 簡歷人員列表區塊  -->
+
+                </H2>
+                <hr>
+                <!-- 功能按鍵顯示區塊 -->
+                <div id="ButtonDiv">
+                    <input class="ResBut" type="button" value="載入簡歷名單" onclick="LoadStudentList();" />
+
+                </div>
+                <!-- 功能按鍵顯示區塊 -->
+                <hr>
+                <!-- 新增個人簡歷資料區塊 -->
+                <div>
+                    <H2 id="EditStudentName">新增簡歷</H2>
+                    <H2 class="Reshead">標題</H2>
+                    <input id="title" class="inputTitle" type="text" value="" placeholder="輸入標題">
+                    <H2 class="Reshead">內容</H2>
+                    <textarea id="TextContent" class="TextContent" type="text" value=""></textarea>
+                    <label class="Reshead">背影照:</label>
+                    <input id="photo1" class="inputPicture" type="text" value="" placeholder="輸入背景檔案名稱">
+                    <br>
+                    <label class="Reshead">個人照:</label>
+                    <input id="photo2" class="inputPicture" type="text" value="" placeholder="輸入大頭照檔案名稱">
+                    <button id="AddResume" class="ResBut" type="button">新增簡歷資訊</button>
+                </div>
+                <!-- 新增個人簡歷資料區塊 -->
+            </div>
+
+            <!-- 內容區塊 -->
+
+            <div class="contentflex">
+
+                <!-- 新增個人簡歷資料區塊 -->
+                　<div id="content">
+
+                </div>
+                <!-- 新增個人簡歷資料區塊 -->
+
+
+                　<div id="Question">
+
+
+                </div>
+            </div>
+
+        </Section>
+
+        <!-- 頁尾區塊 -->
+        <!-- <footer>
+            <p></p>
+        </footer> -->
+    </div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+    //編輯的學生
+    var EditStudentID = '';
+    //編輯學生姓名
+    var EditStudent = '';
+    //顯示MENU學生ID名單  請將分組同學的學號ID填入此陣列
+    let StudentIDList = ["S1234567", "D0852812", "D1146382", "D1255618"];  //, "D1015801", "D1089028", "D0913176"
+    //學生名單:StudentList.csv
+    let StudentList = [];
+    //簡例資料:ResumeData.csv
+    let ResumeData = [];
+    //簡歷列表人員名單
+    let PersonList = [];
+</script>
+
+<!--<script> javascript 公用函示-->
+<script src="./js/HTMLCommFunc.js"></script>
+<!--<script> javascript 程式區-->
+<script src="./js/ResumeSample.js"></script>
+<!-- <script> javascript 個人簡例資料傳送服務程式區 -->
+<script src="./js/WebDBService.js"></script>
+<!--載入網頁程式碼  -->
+<script src="./js/Resume.js"></script>
+
+<script type="text/javascript">
+
+    //網頁載入完成     
+    $(document).ready(async function () {
+        //載入資料檔案
+        //alert('網頁HTML文件載入完成');
+        //載入學生名單資料
+        await LoadWebDBStudentData('1122');
+        //載入學生簡例列表資料
+        await LoadWebDBResumeData('', '1122');
+    });
+
+
+
+
+
+</script>

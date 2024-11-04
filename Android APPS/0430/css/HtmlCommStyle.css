@@ -1,0 +1,75 @@
+﻿
+body{
+    font-family:DFKai-SB, serif;
+    font-size: 24px;
+    min-width: 30%;
+}
+
+h1 h2 h3 h4 h5 h6{
+    text-align: center;
+}
+   
+.div1
+{
+    margin: 20px;
+    padding: 10px;
+    border-radius: 15px;
+    width: 30%;
+    background-color:blanchedalmond;
+   
+}
+
+.div2{
+    position:absolute;
+    top:20px;
+    left:20px;
+    width:300px;
+    
+    border:solid;
+    border-width:2px;
+    border-color:aqua;
+}
+
+label
+{
+    padding: 15px;
+}
+
+/* https://www.bestcssbuttongenerator.com/#/13 CSS按鈕產生器*/
+/* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_buttons_animate3 */
+.button1 {
+    margin: 10px;
+  padding: 15px 25px;
+  font-size: 24px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: #fff;
+  background-color: #04AA6D;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 3px #999;
+}
+
+
+/* :hover 游標經過物件*/
+.button1:hover {
+    font-size: 25px;
+    background-color: #3e8e41
+}
+
+
+input
+{
+    padding-right:10px ;
+    padding-left:10px ;
+    font-size:24px;
+    
+    border-radius: 10px;
+}
+
+/* :hover 游標經過物件*/
+input:hover
+{
+    background-color:yellow
+}

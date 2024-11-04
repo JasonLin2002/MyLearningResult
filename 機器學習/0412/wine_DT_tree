@@ -1,0 +1,29 @@
+digraph Tree {
+node [shape=box, style="filled, rounded", color="black", fontname="helvetica"] ;
+edge [fontname="helvetica"] ;
+0 [label=<hue &le; 0.785<br/>gini = 0.658<br/>samples = 178<br/>value = [59, 71, 48]<br/>class = class_1>, fillcolor="#ebfcf2"] ;
+1 [label=<od280/od315_of_diluted_wines &le; 2.64<br/>gini = 0.198<br/>samples = 45<br/>value = [0, 5, 40]<br/>class = class_2>, fillcolor="#9152e8"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label=<proline &le; 393.5<br/>gini = 0.048<br/>samples = 41<br/>value = [0, 1, 40]<br/>class = class_2>, fillcolor="#843ee6"] ;
+1 -> 2 ;
+3 [label=<gini = 0.0<br/>samples = 1<br/>value = [0, 1, 0]<br/>class = class_1>, fillcolor="#39e581"] ;
+2 -> 3 ;
+4 [label=<gini = 0.0<br/>samples = 40<br/>value = [0, 0, 40]<br/>class = class_2>, fillcolor="#8139e5"] ;
+2 -> 4 ;
+5 [label=<gini = 0.0<br/>samples = 4<br/>value = [0, 4, 0]<br/>class = class_1>, fillcolor="#39e581"] ;
+1 -> 5 ;
+6 [label=<nonflavanoid_phenols &le; 0.345<br/>gini = 0.553<br/>samples = 133<br/>value = [59, 66, 8]<br/>class = class_1>, fillcolor="#ecfdf3"] ;
+0 -> 6 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+7 [label=<alcohol &le; 12.785<br/>gini = 0.47<br/>samples = 82<br/>value = [51, 31, 0]<br/>class = class_0>, fillcolor="#f5ceb1"] ;
+6 -> 7 ;
+8 [label=<gini = 0.0<br/>samples = 25<br/>value = [0, 25, 0]<br/>class = class_1>, fillcolor="#39e581"] ;
+7 -> 8 ;
+9 [label=<gini = 0.188<br/>samples = 57<br/>value = [51, 6, 0]<br/>class = class_0>, fillcolor="#e89050"] ;
+7 -> 9 ;
+10 [label=<alcohol &le; 12.78<br/>gini = 0.48<br/>samples = 51<br/>value = [8, 35, 8]<br/>class = class_1>, fillcolor="#83efb0"] ;
+6 -> 10 ;
+11 [label=<gini = 0.057<br/>samples = 34<br/>value = [0, 33, 1]<br/>class = class_1>, fillcolor="#3fe685"] ;
+10 -> 11 ;
+12 [label=<gini = 0.595<br/>samples = 17<br/>value = [8, 2, 7]<br/>class = class_0>, fillcolor="#fcf2eb"] ;
+10 -> 12 ;
+}
