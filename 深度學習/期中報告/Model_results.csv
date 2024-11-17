@@ -1,32 +1,33 @@
 Network Model,Type,Recall,Precision,F1,Accuracy
-Single CNN network,N-R,0.6,0.58,0.58,0.6
-Single LSTM network,N-R,0.67,0.66,0.65,0.67
-Individual CNN and LSTM Networks,N-R,0.62,0.61,0.6,0.62
-Individual CNN and LSTM Networks with SVM,N-R,0.58,0.56,0.54,0.58
-Single 3-Layer CNN and LSTM Networks,N-R,0.61,0.6,0.61,0.61
-Multiple CNN’s and LSTM Network,N-R,0.62,0.61,0.61,0.62
-Single 3-Layer CNN and bi-LSTM Network,N-R,0.61,0.61,0.61,0.61
-Multiple CNN’s and bi-LSTM Network,N-R,0.6,0.62,0.6,0.6
-Single CNN network,R,0.62,0.61,0.61,0.62
-Single LSTM network,R,0.66,0.67,0.64,0.66
-Individual CNN and LSTM Networks,R,0.64,0.63,0.63,0.64
-Individual CNN and LSTM Networks with SVM,R,0.54,0.46,0.49,0.54
-Single 3-Layer CNN and LSTM Networks,R,0.63,0.64,0.63,0.63
-Multiple CNN’s and LSTM Network,R,0.66,0.66,0.66,0.66
-Single 3-Layer CNN and bi-LSTM Network,R,0.65,0.65,0.64,0.65
-Multiple CNN’s and bi-LSTM Network,R,0.65,0.63,0.64,0.65
-Single CNN network,N-R,0.52,0.53,0.48,0.52
-Single LSTM network,N-R,0.51,0.45,0.47,0.51
-Individual CNN and LSTM Networks,N-R,0.52,0.46,0.48,0.52
-Individual CNN and LSTM Networks with SVM,N-R,0.52,0.44,0.47,0.52
-Single 3-Layer CNN and LSTM Networks,N-R,0.52,0.52,0.49,0.52
-Multiple CNN’s and LSTM Network,N-R,0.5,0.46,0.47,0.5
-Single 3-Layer CNN and bi-LSTM Network,N-R,0.52,0.47,0.48,0.52
-Multiple CNN’s and bi-LSTM Network,N-R,0.51,0.53,0.47,0.51
-Single CNN network,R,0.5,0.47,0.46,0.5
-Single LSTM network,R,0.51,0.45,0.48,0.51
+Single CNN network,N-R,0.5,0.49,0.46,0.5
+Single LSTM network,N-R,0.5,0.43,0.46,0.5
+Individual CNN and LSTM Networks,N-R,0.5,0.48,0.48,0.5
+Individual CNN and LSTM Networks with SVM,N-R,0.5,0.58,0.47,0.5
+Single 3-Layer CNN and LSTM Networks,N-R,0.5,0.48,0.47,0.5
+Multiple CNN’s and LSTM Network,N-R,0.5,0.48,0.46,0.5
+Single 3-Layer CNN and bi-LSTM Network,N-R,0.5,0.49,0.45,0.5
+Multiple CNN’s and bi-LSTM Network,N-R,0.51,0.44,0.47,0.51
+Single CNN network,R,0.48,0.48,0.42,0.48
+Single LSTM network,R,0.47,0.42,0.42,0.47
 Individual CNN and LSTM Networks,R,0.5,0.43,0.46,0.5
-Individual CNN and LSTM Networks with SVM,R,0.52,0.44,0.47,0.52
-Single 3-Layer CNN and LSTM Networks,R,0.62,0.61,0.61,0.62
-Multiple CNN’s and LSTM Network,R,0.61,0.61,0.61,0.61
-Single 3-Layer CNN and bi-LSTM Network,R,0.6,0.62,0.6,0.6
+Individual CNN and LSTM Networks with SVM,R,0.49,0.56,0.45,0.49
+Single 3-Layer CNN and LSTM Networks,R,0.49,0.44,0.45,0.49
+Multiple CNN’s and LSTM Network,R,0.5,0.5,0.46,0.5
+Single 3-Layer CNN and bi-LSTM Network,R,0.5,0.47,0.47,0.5
+Multiple CNN’s and bi-LSTM Network,R,0.51,0.59,0.47,0.51
+Single CNN network,N-R,0.55,0.54,0.54,0.55
+Single LSTM network,N-R,0.61,0.61,0.61,0.61
+Individual CNN and LSTM Networks,N-R,0.56,0.56,0.54,0.56
+Individual CNN and LSTM Networks with SVM,N-R,0.54,0.61,0.5,0.54
+Single 3-Layer CNN and LSTM Networks,N-R,0.56,0.56,0.56,0.56
+Multiple CNN’s and LSTM Network,N-R,0.59,0.58,0.58,0.59
+Single 3-Layer CNN and bi-LSTM Network,N-R,0.57,0.56,0.56,0.57
+Multiple CNN’s and bi-LSTM Network,N-R,0.58,0.58,0.58,0.58
+Single CNN network,R,0.58,0.58,0.57,0.58
+Single LSTM network,R,0.61,0.61,0.61,0.61
+Individual CNN and LSTM Networks,R,0.59,0.6,0.57,0.59
+Individual CNN and LSTM Networks with SVM,R,0.51,0.58,0.47,0.51
+Single 3-Layer CNN and LSTM Networks,R,0.59,0.58,0.58,0.59
+Multiple CNN’s and LSTM Network,R,0.59,0.59,0.59,0.59
+Single 3-Layer CNN and bi-LSTM Network,R,0.58,0.57,0.57,0.58
+Multiple CNN’s and bi-LSTM Network,R,0.6,0.6,0.6,0.6
