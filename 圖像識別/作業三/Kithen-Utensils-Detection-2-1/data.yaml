@@ -1,0 +1,18 @@
+names:
+- Desert-Spoon
+- Dinner-Fork
+- Kitchen-Knife
+- Peeler
+- Serving-Spoon
+- Tea-Spoon
+- Whisk
+nc: 7
+roboflow:
+  license: CC BY 4.0
+  project: kithen-utensils-detection-2
+  url: https://universe.roboflow.com/tokushima-university-luktu/kithen-utensils-detection-2/dataset/1
+  version: 1
+  workspace: tokushima-university-luktu
+test: ../test/images
+train: ../train/images
+val: ../valid/images
