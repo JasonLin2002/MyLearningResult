@@ -1,0 +1,1175 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+/* 原有樣式保持不變，新增搜尋相關樣式 */
+/* 自定義提示框樣式 */
+.custom-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+    max-width: 300px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.custom-toast.success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.custom-toast.error {
+    background: linear-gradient(135deg, #dc3545, #fd7e14);
+}
+
+.custom-toast.show {
+    transform: translateX(0);
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toast-content i {
+    font-size: 1.2em;
+}
+
+/* 搜尋框樣式 */
+.search-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.search-box {
+    position: relative;
+}
+
+.search-input {
+    border: 2px solid transparent;
+    border-radius: 25px;
+    padding: 12px 50px 12px 20px;
+    font-size: 16px;
+    width: 100%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    background: white;
+}
+
+/* 搜尋框狀態樣式 */
+.search-input:focus {
+    outline: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    transform: translateY(-1px);
+}
+
+.search-input.search-empty {
+    border-color: #e9ecef;
+    animation: subtle-pulse 2s infinite;
+}
+
+.search-input.search-short {
+    border-color: #ffc107;
+    background: linear-gradient(90deg, white 95%, #fff3cd 100%);
+}
+
+.search-input.search-ready {
+    border-color: #28a745;
+    background: linear-gradient(90deg, white 95%, #d4edda 100%);
+}
+
+/* 搜尋按鈕樣式 */
+.search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 1;
+}
+
+.search-btn:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.search-btn.btn-disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.search-btn.btn-disabled:hover {
+    transform: translateY(-50%) scale(1);
+    box-shadow: none;
+}
+
+/* 動畫效果 */
+@keyframes subtle-pulse {
+    0%, 100% { 
+        border-color: #e9ecef;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    50% { 
+        border-color: #dee2e6;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.15);
+    }
+}
+
+@keyframes focus-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(102, 126, 234, 0.6);
+    }
+}
+
+.search-input.search-ready {
+    animation: none;
+}
+
+.search-input.search-ready:focus {
+    animation: focus-glow 2s infinite;
+}
+
+.search-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.suggestion-tag {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.suggestion-tag:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-1px);
+}
+
+/* 搜尋結果樣式 */
+.search-results-header {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-left: 4px solid #007bff;
+}
+
+.clear-search-btn {
+    background: none;
+    border: 1px solid #6c757d;
+    color: #6c757d;
+    border-radius: 20px;
+    padding: 5px 15px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.clear-search-btn:hover {
+    background: #6c757d;
+    color: white;
+}
+
+/* 載入動畫 */
+.search-loading {
+    display: none;
+    text-align: center;
+    padding: 40px;
+}
+
+.search-loading .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 搜尋提示文字動態效果 */
+.search-input::placeholder {
+    transition: color 0.3s ease;
+}
+
+.search-input.search-empty::placeholder {
+    color: #6c757d;
+}
+
+.search-input.search-short::placeholder {
+    color: #856404;
+}
+
+.search-input.search-ready::placeholder {
+    color: #155724;
+}
+
+/* 其他原有樣式保持不變 */
+.tag-weight-badge {
+    position: relative;
+    overflow: hidden;
+}
+
+.tag-weight-badge::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.tag-weight-badge.new-update::after {
+    left: 100%;
+}
+
+#user-tags-container {
+    transition: all 0.3s ease;
+}
+
+#user-tags-container.updated {
+    background-color: rgba(40, 167, 69, 0.1);
+    border-radius: 8px;
+    padding: 8px;
+    border: 2px solid rgba(40, 167, 69, 0.3);
+}
+
+.clickable-tag {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    position: relative;
+}
+
+.clickable-tag:hover {
+    background-color: #007bff !important;
+    color: white !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,123,255,0.3);
+}
+
+.clickable-tag.updating {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.clickable-tag::after {
+    content: '👆';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.clickable-tag:hover::after {
+    opacity: 1;
+}
+
+.stat-item {
+    transition: all 0.3s ease;
+}
+
+.stat-item.updated {
+    background-color: rgba(40, 167, 69, 0.1) !important;
+    transform: scale(1.02);
+}
+
+.tags-hint {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.tags-hint i {
+    color: #ffc107;
+}
+</style>
+
+<div class="row">
+    <!-- 用戶選擇和檔案區域 -->
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-user me-2"></i>用戶選擇</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET">
+                    <div class="mb-3">
+                        <select name="user_id" class="form-select" onchange="this.form.submit()">
+                            <option value="">請選擇用戶</option>
+                            {% for user in user_list %}
+                            <option value="{{ user }}" {% if user == selected_user %}selected{% endif %}>
+                                {{ user[:8] }}...
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if user_profile %}
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-user-circle me-2"></i>用戶檔案</h5>
+            </div>
+            <div class="card-body" id="user-profile-content">
+                <div class="user-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-dollar-sign text-success"></i>
+                        <span>平均消費: ${{ "{:,.0f}".format(user_profile.average_price) }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-eye text-info"></i>
+                        <span>瀏覽商品: {{ user_profile.total_viewed }}個</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-globe text-primary"></i>
+                        <span>{{ user_profile.preference_type }}</span>
+                    </div>
+                </div>
+
+                {% if user_profile.top_tags %}
+                <div class="mt-3">
+                    <h6>
+                        偏好標籤:
+                        <small class="text-muted">(點擊商品標籤增加權重)</small>
+                    </h6>
+                    <div class="tags-hint">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>權重數字越高代表您越喜歡該類型</span>
+                    </div>
+                    <div class="tags-container" id="user-tags-container">
+                        {% for tag_info in user_profile.top_tags %}
+                        <span class="badge bg-secondary me-1 mb-1 tag-weight-badge" 
+                              id="user-tag-{{ loop.index }}">
+                            {{ tag_info.tag }} ({{ tag_info.weight }})
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- 推薦結果區域 -->
+    <div class="col-md-9">
+        <!-- 搜尋功能區塊 -->
+        <div class="search-container">
+            <h5 class="text-white mb-3">
+                <i class="fas fa-search me-2"></i>搜尋旅遊行程
+            </h5>
+            <div class="search-box">
+                <input type="text" 
+                       class="search-input search-empty" 
+                       id="searchInput" 
+                       placeholder="輸入關鍵詞搜尋，例如：溫泉、日本、親子旅遊..."
+                       onkeypress="handleSearchKeyPress(event)"
+                       oninput="handleSearchInput(this)">
+                <button class="search-btn btn-disabled" 
+                        id="searchBtn"
+                        onclick="handleSearchClick()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div class="search-suggestions">
+                <span class="text-white-50 me-2">熱門搜尋：</span>
+                <span class="suggestion-tag" onclick="quickSearch('溫泉')">溫泉</span>
+                <span class="suggestion-tag" onclick="quickSearch('日本')">日本</span>
+                <span class="suggestion-tag" onclick="quickSearch('親子')">親子</span>
+                <span class="suggestion-tag" onclick="quickSearch('美食')">美食</span>
+                <span class="suggestion-tag" onclick="quickSearch('文化')">文化</span>
+                <span class="suggestion-tag" onclick="quickSearch('自然景觀')">自然景觀</span>
+            </div>
+        </div>
+
+        <!-- 搜尋結果標題 -->
+        <div id="search-results-header" class="search-results-header" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">
+                        <i class="fas fa-search me-2"></i>
+                        搜尋結果：<span id="search-query-display"></span>
+                    </h6>
+                    <small class="text-muted">找到 <span id="search-results-count">0</span> 個相關行程</small>
+                </div>
+                <button class="clear-search-btn" onclick="clearSearch()">
+                    <i class="fas fa-times me-1"></i>清除搜尋
+                </button>
+            </div>
+        </div>
+
+        <!-- 載入動畫 -->
+        <div id="search-loading" class="search-loading">
+            <div class="spinner"></div>
+            <p class="text-muted">正在搜尋中...</p>
+        </div>
+
+        <!-- 推薦標題 -->
+        <div class="d-flex justify-content-between align-items-center mb-4" id="recommendation-header">
+            <h2><i class="fas fa-star text-warning me-2"></i>為您推薦</h2>
+            {% if selected_user %}
+            <button class="btn btn-outline-primary btn-sm" onclick="refreshRecommendations()">
+                <i class="fas fa-sync-alt me-1"></i>重新推薦
+            </button>
+            {% endif %}
+        </div>
+
+        {% if selected_user %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert" id="info-alert">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>提示：</strong>點擊推薦商品下方的標籤可以增加該標籤的偏好權重，幫助系統為您提供更精準的推薦！
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endif %}
+
+        {% if recommendations %}
+        <div class="row" id="recommendations-container">
+            {% for rec in recommendations %}
+            <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="card recommendation-card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-start">
+                        <div class="method-badge">
+                            {% if 'content' in rec.method %}
+                            <span class="badge bg-info">內容推薦</span>
+                            {% endif %}
+                            {% if 'collaborative' in rec.method %}
+                            <span class="badge bg-success">協同過濾</span>
+                            {% endif %}
+                            {% if 'tag' in rec.method %}
+                            <span class="badge bg-warning">標籤匹配</span>
+                            {% endif %}
+                        </div>
+                        <div class="score-badge">
+                            <span class="badge bg-primary">{{ "%.2f"|format(rec.score) }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <h5 class="card-title" title="{{ rec.product_name }}">
+                            {{ rec.product_name[:50] }}
+                            {% if rec.product_name|length > 50 %}...{% endif %}
+                        </h5>
+                        
+                        <div class="price-tag mb-3">
+                            <i class="fas fa-tag me-1"></i>
+                            <strong>NT$ {{ "{:,.0f}".format(rec.price) }}</strong>
+                        </div>
+
+                        {% if rec.activity_tags %}
+                        <div class="mb-2">
+                            <small class="text-muted">
+                                <i class="fas fa-running me-1"></i>活動標籤:
+                            </small>
+                            <div class="tags-container">
+                                {% for tag in rec.activity_tags.split(';')[:3] %}
+                                {% if tag.strip() %}
+                                <span class="badge bg-light text-dark me-1 mb-1 clickable-tag" 
+                                      data-tag="{{ tag.strip() }}" 
+                                      data-user="{{ selected_user }}"
+                                      onclick="handleTagClick(this)"
+                                      title="點擊增加 '{{ tag.strip() }}' 標籤偏好權重">
+                                    {{ tag.strip() }}
+                                </span>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if rec.location_tags %}
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-map-marker-alt me-1"></i>地點標籤:
+                            </small>
+                            <div class="tags-container">
+                                {% for tag in rec.location_tags.split(';')[:3] %}
+                                {% if tag.strip() %}
+                                <span class="badge bg-light text-dark me-1 mb-1 clickable-tag" 
+                                      data-tag="{{ tag.strip() }}" 
+                                      data-user="{{ selected_user }}"
+                                      onclick="handleTagClick(this)"
+                                      title="點擊增加 '{{ tag.strip() }}' 標籤偏好權重">
+                                    {{ tag.strip() }}
+                                </span>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="recommendation-reason">
+                            <i class="fas fa-lightbulb text-warning me-1"></i>
+                            <small class="text-muted">{{ rec.reason }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        {% if rec.link %}
+                        <a href="{{ rec.link }}" target="_blank" class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-external-link-alt me-1"></i>查看詳情
+                        </a>
+                        {% else %}
+                        <button class="btn btn-secondary btn-sm w-100" disabled>
+                            暫無連結
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5" id="no-results">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">暫無推薦結果</h4>
+            <p class="text-muted">請選擇一個用戶來查看個人化推薦</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// 全域變數
+let currentSearchQuery = '';
+let isSearchMode = false;
+
+// 搜尋輸入處理 - 新增即時反饋
+function handleSearchInput(inputElement) {
+    const query = inputElement.value;
+    const searchBtn = document.getElementById('searchBtn');
+    
+    // 清除所有狀態類別
+    inputElement.classList.remove('search-empty', 'search-short', 'search-ready');
+    searchBtn.classList.remove('btn-disabled');
+    
+    if (query.length === 0) {
+        // 空白狀態
+        inputElement.classList.add('search-empty');
+        searchBtn.classList.add('btn-disabled');
+        updateSearchPlaceholder(inputElement, '開始輸入來搜尋行程...');
+    } else if (query.length === 1) {
+        // 輸入過短狀態
+        inputElement.classList.add('search-short');
+        updateSearchPlaceholder(inputElement, '再輸入一些字符會更精準哦');
+    } else {
+        // 準備就緒狀態
+        inputElement.classList.add('search-ready');
+        updateSearchPlaceholder(inputElement, '按 Enter 或點擊搜尋');
+    }
+}
+
+// 更新 placeholder 文字
+function updateSearchPlaceholder(inputElement, newPlaceholder) {
+    inputElement.setAttribute('placeholder', newPlaceholder);
+}
+
+// 搜尋按鈕點擊處理
+function handleSearchClick() {
+    const searchInput = document.getElementById('searchInput');
+    const query = searchInput.value.trim();
+    
+    if (query.length === 0) {
+        // 空白搜尋：聚焦到搜尋框並輕微動畫提示
+        searchInput.focus();
+        searchInput.style.animation = 'subtle-pulse 1s ease-in-out';
+        setTimeout(() => {
+            searchInput.style.animation = '';
+        }, 1000);
+        return;
+    }
+    
+    // 執行搜尋
+    performSearch();
+}
+
+// 鍵盤事件處理
+function handleSearchKeyPress(event) {
+    if (event.key === 'Enter') {
+        const query = event.target.value.trim();
+        if (query.length === 0) {
+            // 空白按 Enter：輕微提示
+            event.target.style.animation = 'subtle-pulse 1s ease-in-out';
+            setTimeout(() => {
+                event.target.style.animation = '';
+            }, 1000);
+            return;
+        }
+        performSearch();
+    }
+}
+
+// 執行搜尋 - 移除錯誤檢查
+async function performSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const query = searchInput.value.trim();
+    
+    // 不再檢查空白或長度，直接處理
+    currentSearchQuery = query || '';
+    isSearchMode = true;
+    
+    // 如果是空白搜尋，顯示所有結果
+    if (!query) {
+        // 可以選擇回到推薦模式或搜尋所有
+        clearSearch();
+        return;
+    }
+    
+    // 視覺反饋：搜尋框確認狀態
+    searchInput.classList.remove('search-empty', 'search-short');
+    searchInput.classList.add('search-ready');
+    
+    // 顯示載入動畫
+    showSearchLoading(true);
+    
+    // 隱藏推薦結果
+    document.getElementById('recommendations-container').style.display = 'none';
+    document.getElementById('recommendation-header').style.display = 'none';
+    document.getElementById('info-alert')?.style.setProperty('display', 'none');
+    
+    try {
+        const userId = '{{ selected_user }}';
+        const response = await fetch('/api/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                query: query,
+                user_id: userId || null
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            displaySearchResults(data.results, data.query, data.total);
+        } else {
+            throw new Error(data.error || '搜尋失敗');
+        }
+        
+    } catch (error) {
+        console.error('搜尋時發生錯誤:', error);
+        // 改為溫和的處理方式，不跳出錯誤訊息
+        showSearchLoading(false);
+        displaySearchResults([], query, 0);
+    }
+}
+
+function quickSearch(keyword) {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.value = keyword;
+    
+    // 觸發輸入事件來更新狀態
+    handleSearchInput(searchInput);
+    
+    // 短暫延遲後執行搜尋，讓用戶看到狀態變化
+    setTimeout(() => {
+        performSearch();
+    }, 200);
+}
+
+function displaySearchResults(results, query, total) {
+    showSearchLoading(false);
+    
+    // 顯示搜尋結果標題
+    const headerElement = document.getElementById('search-results-header');
+    const queryDisplay = document.getElementById('search-query-display');
+    const countDisplay = document.getElementById('search-results-count');
+    
+    queryDisplay.textContent = query;
+    countDisplay.textContent = total;
+    headerElement.style.display = 'block';
+    
+    // 顯示搜尋結果
+    const container = document.getElementById('recommendations-container');
+    
+    if (results.length === 0) {
+        container.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">找不到相關結果</h4>
+                <p class="text-muted">請嘗試其他關鍵詞或使用推薦功能</p>
+                <button class="btn btn-primary" onclick="clearSearch()">查看推薦</button>
+            </div>
+        `;
+    } else {
+        container.innerHTML = results.map(result => createProductCard(result)).join('');
+        
+        // 重新初始化標籤點擊功能
+        initializeClickableTags();
+    }
+    
+    container.style.display = 'flex';
+}
+
+function createProductCard(product) {
+    const activityTags = product.activity_tags ? product.activity_tags.split(';').slice(0, 3) : [];
+    const locationTags = product.location_tags ? product.location_tags.split(';').slice(0, 3) : [];
+    const selectedUser = '{{ selected_user }}';
+    
+    return `
+        <div class="col-lg-6 col-xl-4 mb-4">
+            <div class="card recommendation-card h-100">
+                <div class="card-header d-flex justify-content-between align-items-start">
+                    <div class="method-badge">
+                        <span class="badge bg-primary">搜尋結果</span>
+                    </div>
+                    <div class="score-badge">
+                        <span class="badge bg-success">${product.score.toFixed(2)}</span>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <h5 class="card-title" title="${product.product_name}">
+                        ${product.product_name.length > 50 ? product.product_name.substring(0, 50) + '...' : product.product_name}
+                    </h5>
+                    
+                    <div class="price-tag mb-3">
+                        <i class="fas fa-tag me-1"></i>
+                        <strong>NT$ ${product.price.toLocaleString()}</strong>
+                    </div>
+
+                    ${activityTags.length > 0 ? `
+                    <div class="mb-2">
+                        <small class="text-muted">
+                            <i class="fas fa-running me-1"></i>活動標籤:
+                        </small>
+                        <div class="tags-container">
+                            ${activityTags.map(tag => tag.trim() ? `
+                                <span class="badge bg-light text-dark me-1 mb-1 clickable-tag" 
+                                      data-tag="${tag.trim()}" 
+                                      data-user="${selectedUser}"
+                                      onclick="handleTagClick(this)"
+                                      title="點擊增加 '${tag.trim()}' 標籤偏好權重">
+                                    ${tag.trim()}
+                                </span>
+                            ` : '').join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    ${locationTags.length > 0 ? `
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i>地點標籤:
+                        </small>
+                        <div class="tags-container">
+                            ${locationTags.map(tag => tag.trim() ? `
+                                <span class="badge bg-light text-dark me-1 mb-1 clickable-tag" 
+                                      data-tag="${tag.trim()}" 
+                                      data-user="${selectedUser}"
+                                      onclick="handleTagClick(this)"
+                                      title="點擊增加 '${tag.trim()}' 標籤偏好權重">
+                                    ${tag.trim()}
+                                </span>
+                            ` : '').join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <div class="recommendation-reason">
+                        <i class="fas fa-lightbulb text-warning me-1"></i>
+                        <small class="text-muted">${product.reason}</small>
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    ${product.link ? `
+                    <a href="${product.link}" target="_blank" class="btn btn-primary btn-sm w-100">
+                        <i class="fas fa-external-link-alt me-1"></i>查看詳情
+                    </a>
+                    ` : `
+                    <button class="btn btn-secondary btn-sm w-100" disabled>
+                        暫無連結
+                    </button>
+                    `}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function clearSearch() {
+    // 清除搜尋狀態
+    currentSearchQuery = '';
+    isSearchMode = false;
+    
+    // 清除搜尋框並重置狀態
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    
+    searchInput.value = '';
+    searchInput.classList.remove('search-short', 'search-ready');
+    searchInput.classList.add('search-empty');
+    searchBtn.classList.add('btn-disabled');
+    updateSearchPlaceholder(searchInput, '輸入關鍵詞搜尋，例如：溫泉、日本、親子旅遊...');
+    
+    // 隱藏搜尋結果標題
+    document.getElementById('search-results-header').style.display = 'none';
+    
+    // 顯示推薦標題和提示
+    document.getElementById('recommendation-header').style.display = 'flex';
+    const infoAlert = document.getElementById('info-alert');
+    if (infoAlert) {
+        infoAlert.style.display = 'block';
+    }
+    
+    // 重新載入推薦結果
+    refreshRecommendations();
+}
+
+function showSearchLoading(show) {
+    const loadingElement = document.getElementById('search-loading');
+    if (show) {
+        loadingElement.style.display = 'block';
+    } else {
+        loadingElement.style.display = 'none';
+    }
+}
+
+function initializeClickableTags() {
+    document.querySelectorAll('.clickable-tag').forEach((tag, index) => {
+        const tagText = tag.getAttribute('data-tag');
+        tag.setAttribute('title', `點擊增加 "${tagText}" 標籤的偏好權重`);
+    });
+}
+
+// 原有的標籤點擊功能保持不變
+async function handleTagClick(element) {
+    const tag = element.getAttribute('data-tag');
+    const userId = element.getAttribute('data-user');
+    
+    console.log(`點擊標籤: ${tag}, 用戶: ${userId}`);
+    
+    if (!tag || !userId) {
+        console.error('缺少必要參數');
+        showErrorMessage('缺少必要參數');
+        return;
+    }
+    
+    // 防止重複點擊
+    if (element.classList.contains('updating')) {
+        console.log('正在更新中，忽略重複點擊');
+        return;
+    }
+    
+    element.classList.add('updating');
+    
+    // 視覺反饋：添加點擊效果
+    const originalStyle = {
+        transform: element.style.transform,
+        opacity: element.style.opacity,
+        backgroundColor: element.style.backgroundColor,
+        color: element.style.color,
+        border: element.style.border
+    };
+    
+    element.style.transform = 'scale(0.95)';
+    element.style.opacity = '0.7';
+    
+    try {
+        console.log(`正在發送請求更新標籤: ${tag}`);
+        
+        const response = await fetch('/api/update_tag', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                tag: tag
+            })
+        });
+        
+        console.log('收到響應，狀態:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('服務器響應數據:', data);
+        
+        if (data.success) {
+            // 顯示成功提示
+            showSuccessMessage(data.message || `標籤 "${tag}" 權重已增加`);
+            
+            // 更新用戶檔案顯示
+            if (data.user_profile) {
+                console.log('正在更新用戶檔案...');
+                updateUserProfile(data.user_profile);
+            } else {
+                console.warn('服務器響應中缺少 user_profile 數據');
+            }
+            
+            // 添加成功的視覺效果
+            element.style.backgroundColor = '#28a745';
+            element.style.color = 'white';
+            element.style.border = '2px solid #1e7e34';
+            element.style.transform = 'scale(1.1)';
+            element.style.opacity = '1';
+            
+            // 1.5秒後恢復原狀
+            setTimeout(() => {
+                element.style.transform = originalStyle.transform;
+                element.style.opacity = originalStyle.opacity;
+                element.style.backgroundColor = originalStyle.backgroundColor;
+                element.style.color = originalStyle.color;
+                element.style.border = originalStyle.border;
+                element.classList.remove('updating');
+            }, 1500);
+            
+        } else {
+            throw new Error(data.error || '更新失敗');
+        }
+        
+    } catch (error) {
+        console.error('更新標籤權重時發生錯誤:', error);
+        
+        // 恢復原狀
+        element.style.transform = originalStyle.transform;
+        element.style.opacity = originalStyle.opacity;
+        element.style.backgroundColor = originalStyle.backgroundColor;
+        element.style.color = originalStyle.color;
+        element.style.border = originalStyle.border;
+        element.classList.remove('updating');
+        
+        // 顯示錯誤
+        showErrorMessage('更新失敗: ' + error.message);
+    }
+}
+
+// 顯示成功訊息
+function showSuccessMessage(message) {
+    console.log('顯示成功訊息:', message);
+    const toast = createToast(message, 'success');
+    document.body.appendChild(toast);
+    
+    // 顯示動畫
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100);
+    
+    // 3秒後移除
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                document.body.removeChild(toast);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// 顯示錯誤訊息
+function showErrorMessage(message) {
+    console.log('顯示錯誤訊息:', message);
+    const toast = createToast(message, 'error');
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                document.body.removeChild(toast);
+            }
+        }, 300);
+    }, 4000);
+}
+
+// 創建提示框
+function createToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `custom-toast ${type}`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    return toast;
+}
+
+// 更新用戶檔案顯示 - 完整版
+function updateUserProfile(userProfile) {
+    console.log('開始更新用戶檔案:', userProfile);
+    
+    // 更新標籤容器
+    const tagsContainer = document.getElementById('user-tags-container');
+    if (tagsContainer && userProfile.top_tags && userProfile.top_tags.length > 0) {
+        console.log('更新標籤容器...');
+        
+        // 添加更新動畫
+        tagsContainer.style.opacity = '0.5';
+        tagsContainer.style.transform = 'scale(0.95)';
+        
+        setTimeout(() => {
+            let tagsHtml = '';
+            userProfile.top_tags.forEach((tagInfo, index) => {
+                tagsHtml += `<span class="badge bg-secondary me-1 mb-1 tag-weight-badge" 
+                    id="user-tag-${index + 1}">
+                    ${tagInfo.tag} (${tagInfo.weight})
+                </span>`;
+            });
+            tagsContainer.innerHTML = tagsHtml;
+            
+            // 恢復動畫
+            tagsContainer.style.opacity = '1';
+            tagsContainer.style.transform = 'scale(1)';
+            
+            // 添加閃爍效果
+            tagsContainer.classList.add('updated');
+            setTimeout(() => {
+                tagsContainer.classList.remove('updated');
+            }, 1000);
+            
+            console.log('標籤容器更新完成');
+            
+        }, 200);
+    } else {
+        console.warn('找不到標籤容器或沒有標籤數據');
+    }
+    
+    // 更新統計資訊
+    updateUserStats(userProfile);
+}
+
+// 更新用戶統計資訊
+function updateUserStats(userProfile) {
+    console.log('更新用戶統計資訊...');
+    
+    // 更新平均消費
+    const avgPriceElement = document.querySelector('.stat-item:nth-child(1) span');
+    if (avgPriceElement && userProfile.average_price !== undefined) {
+        const newText = `平均消費: ${userProfile.average_price.toLocaleString()}`;
+        if (avgPriceElement.textContent !== newText) {
+            avgPriceElement.textContent = newText;
+            avgPriceElement.parentElement.classList.add('updated');
+            setTimeout(() => {
+                avgPriceElement.parentElement.classList.remove('updated');
+            }, 1000);
+        }
+    }
+    
+    // 更新瀏覽商品數
+    const viewedElement = document.querySelector('.stat-item:nth-child(2) span');
+    if (viewedElement && userProfile.total_viewed !== undefined) {
+        const newText = `瀏覽商品: ${userProfile.total_viewed}個`;
+        if (viewedElement.textContent !== newText) {
+            viewedElement.textContent = newText;
+            viewedElement.parentElement.classList.add('updated');
+            setTimeout(() => {
+                viewedElement.parentElement.classList.remove('updated');
+            }, 1000);
+        }
+    }
+    
+    // 更新偏好類型
+    const preferenceElement = document.querySelector('.stat-item:nth-child(3) span');
+    if (preferenceElement && userProfile.preference_type) {
+        if (preferenceElement.textContent !== userProfile.preference_type) {
+            preferenceElement.textContent = userProfile.preference_type;
+            preferenceElement.parentElement.classList.add('updated');
+            setTimeout(() => {
+                preferenceElement.parentElement.classList.remove('updated');
+            }, 1000);
+        }
+    }
+}
+
+// 重新載入推薦
+function refreshRecommendations() {
+    console.log('重新載入推薦...');
+    location.reload();
+}
+
+// 頁面載入完成後初始化
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('頁面載入完成，初始化功能...');
+    
+    // 初始化可點擊標籤
+    initializeClickableTags();
+    
+    // 初始化搜尋框狀態
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    if (searchInput && searchBtn) {
+        // 設定初始狀態
+        searchInput.classList.add('search-empty');
+        searchBtn.classList.add('btn-disabled');
+        
+        // 添加焦點處理
+        searchInput.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'scale(1.02)';
+        });
+        
+        searchInput.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'scale(1)';
+        });
+    }
+    
+    // 顯示初始化完成訊息
+    const tagCount = document.querySelectorAll('.clickable-tag').length;
+    console.log(`標籤點擊功能已初始化，共 ${tagCount} 個可點擊標籤`);
+    
+    // 如果有選中的用戶，顯示歡迎訊息
+    const selectedUser = '{{ selected_user }}';
+    if (selectedUser) {
+        console.log(`當前用戶: ${selectedUser}`);
+    }
+});
+</script>
+{% endblock %}
