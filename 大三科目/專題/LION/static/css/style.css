@@ -1,0 +1,169 @@
+/* 全域樣式 */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* 推薦卡片樣式 */
+.recommendation-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.recommendation-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.recommendation-card .card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0.75rem 1rem;
+}
+
+.method-badge .badge {
+    font-size: 0.7rem;
+    margin-right: 0.25rem;
+}
+
+.score-badge .badge {
+    font-size: 0.8rem;
+}
+
+.price-tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    display: inline-block;
+    font-size: 1.1rem;
+}
+
+.tags-container {
+    line-height: 2;
+}
+
+.tags-container .badge {
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.recommendation-reason {
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+    margin-top: 1rem;
+}
+
+/* 用戶檔案樣式 */
+.user-stats .stat-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+.user-stats .stat-item i {
+    margin-right: 0.75rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* 導航列樣式 */
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .recommendation-card .card-title {
+        font-size: 1rem;
+    }
+    
+    .price-tag {
+        font-size: 1rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .method-badge .badge {
+        font-size: 0.6rem;
+    }
+}
+
+/* 載入動畫 */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 可點擊標籤樣式 */
+.clickable-tag {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.clickable-tag:hover {
+    background-color: #007bff !important;
+    color: white !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.clickable-tag:active {
+    transform: scale(0.95);
+}
+
+/* 標籤點擊動畫 */
+@keyframes tagClick {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); background-color: #28a745; }
+    100% { transform: scale(1); }
+}
+
+.tag-clicked {
+    animation: tagClick 0.3s ease;
+}
+
+/* 成功提示樣式 */
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* 用戶檔案更新動畫 */
+.user-profile-updated {
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* 標籤提示文字 */
+.tags-container::before {
+    content: "💡 點擊標籤增加偏好權重";
+    display: block;
+    font-size: 0.7rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+    font-style: italic;
+}
