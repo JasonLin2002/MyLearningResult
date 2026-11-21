@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Jason Lin
+# SPDX-License-Identifier: MIT
+# License scope: see ../../LICENSE-Deutsch-Jozsa-MIT.txt
+
 import numpy as np
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from qiskit import transpile
